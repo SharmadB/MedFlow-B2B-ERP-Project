@@ -1,0 +1,38 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+
+# Node
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
+# Java / Maven
+target/
+**/target/
+
+# Logs
+*.log
+logs/
+**/logs/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build / temporary
+*.tmp
+*.temp
+
+# Keep example environment files tracked
+!/.env.example
+!**/.env.example
