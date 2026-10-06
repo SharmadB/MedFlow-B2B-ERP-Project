@@ -15,7 +15,7 @@ resource "aws_route53_record" "frontend" {
 
   alias {
     name                   = var.cloudfront_domain_name
-    zone_id                = "Z2FDTNDATAQYW2"  # CloudFront hosted zone ID (fixed)
+    zone_id                = "Z2FDTNDATAQYW2" # CloudFront hosted zone ID (fixed)
     evaluate_target_health = false
   }
 }

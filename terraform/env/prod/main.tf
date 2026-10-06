@@ -70,7 +70,7 @@ module "eks" {
   node_desired_count  = 3
   node_min_count      = 2
   node_max_count      = 10
-  public_endpoint     = false    # Private endpoint only
+  public_endpoint     = false # Private endpoint only
   tags                = local.common_tags
 }
 

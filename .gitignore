@@ -36,3 +36,10 @@ Thumbs.db
 # Keep example environment files tracked
 !/.env.example
 !**/.env.example
+
+# Terraform local files
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log

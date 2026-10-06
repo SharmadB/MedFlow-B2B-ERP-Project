@@ -12,7 +12,7 @@ resource "aws_ecr_repository" "services" {
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
-    scan_on_push = true   # Trigger Trivy / AWS Inspector on every push
+    scan_on_push = true # Trigger Trivy / AWS Inspector on every push
   }
 
   encryption_configuration {
@@ -44,10 +44,10 @@ resource "aws_ecr_lifecycle_policy" "services" {
         rulePriority = 2
         description  = "Keep last 10 tagged images"
         selection = {
-          tagStatus   = "tagged"
+          tagStatus     = "tagged"
           tagPrefixList = ["v", "latest"]
-          countType   = "imageCountMoreThan"
-          countNumber = 10
+          countType     = "imageCountMoreThan"
+          countNumber   = 10
         }
         action = { type = "expire" }
       }
