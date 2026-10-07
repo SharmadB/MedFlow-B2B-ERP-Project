@@ -1,366 +1,305 @@
+````markdown
 # MedFlow B2B ERP
 
-A B2B medical ERP application built using a microservices architecture. The project manages users, products, inventory, and orders through separate backend services, with a React frontend.
+A B2B medical ERP application built using a microservices architecture for managing users, organizations, products, inventory, and orders.
 
-The project was built and deployed locally using Docker and Kubernetes, with Jenkins used to understand and automate the CI/CD workflow.
+The project evolved from a local Docker/Kubernetes deployment into an AWS-based V2 deployment using Amazon EKS, Kubernetes, Amazon ECR, AWS Load Balancer Controller, Application Load Balancer, Terraform, Jenkins, and MongoDB Atlas.
 
-## Key Features
+---
 
-- User and organization management
-- Role-based access for different users
-- Product and inventory management
-- Order creation and order tracking
-- REST APIs using Spring Boot
-- MongoDB Atlas for database storage
-- Docker containerization
-- Kubernetes deployment using Minikube
-- Kubernetes Ingress for routing frontend API requests
-- Jenkins-based CI/CD workflow
+## 🚀 Project Overview
 
-## Architecture Overview
+MedFlow is composed of three Spring Boot backend microservices:
 
-The application follows a microservices architecture where the frontend communicates with the backend services through Kubernetes Ingress.
+- **User Service** – authentication, users, roles, and organizations
+- **Product Service** – product catalog and inventory-related operations
+- **Order Service** – order creation and order management
 
-```text
-                    React Frontend
-                         |
-                         v
-                Kubernetes Ingress
-                         |
-          +--------------+--------------+
-          |              |              |
-          v              v              v
-    User Service   Product Service   Order Service
-      :8081            :8082            :8083
-          |              |              |
-          +--------------+--------------+
-                         |
-                         v
-                    MongoDB Atlas
-```
-## Tech Stack
+The services expose REST APIs and use JWT-based authentication for protected operations.
 
-| Area                    | Technology            |
-| ----------------------- | --------------------- |
-| Frontend                | React, Vite           |
-| Backend                 | Spring Boot, Java     |
-| Database                | MongoDB Atlas         |
-| API                     | REST APIs             |
-| Authentication          | Spring Security / JWT |
-| Containerization        | Docker                |
-| Container Orchestration | Kubernetes            |
-| Local Kubernetes        | Minikube              |
-| Kubernetes Routing      | Ingress               |
-| CI/CD                   | Jenkins               |
-| Infrastructure as Code  | Terraform (planned later) |
-| Version Control         | Git, GitHub           |
+MongoDB Atlas is used as the persistent database.
 
-## Backend Services
+---
 
-User Service
+## 🏗️ Architecture
 
-Port: 8081
-
-Handles:
-
-User management
-Authentication
-User roles
-Organization-related operations
-User-related APIs
-Product Service
-
-Port: 8082
-
-Handles:
-
-Product management
-Product catalog
-Inventory management
-Stock-related operations
-Product APIs
-Order Service
-
-Port: 8083
-
-Handles:
-
-Order creation
-Order management
-Order status
-Order history
-Order-related APIs
-
-## Docker
-
-Docker is used to package the application components into containers so that the services can run in a consistent environment.
-
-The project includes Docker configuration for the frontend and backend services.
-
-Docker Flow
-
-Application Source Code
-        |
-        v
-    Dockerfile
-        |
-        v
-   Docker Image
-        |
-        v
-  Docker Container
-        |
-        v
- Application Service
-
-Docker was used during local development and testing before moving the application components into Kubernetes.
-
-Docker Concepts Used
-
-Dockerfiles
-Docker images
-Docker containers
-Port mapping
-Docker networks
-Containerized application services
-Docker Compose configuration
-
-## Kubernetes
-
-Kubernetes is used to deploy and manage the application containers locally through Minikube.
-
-The project contains Kubernetes manifests for the application services and networking components.
-
-Kubernetes Flow
-
-                     User
-                      |
-                      v
-               React Frontend
-                      |
-                      v
-              Kubernetes Ingress
-                      |
-        +-------------+-------------+
-        |             |             |
-        v             v             v
-   User Service  Product Service  Order Service
-     :8081          :8082          :8083
-        |             |             |
-        +-------------+-------------+
-                      |
-                      v
-                 MongoDB Atlas
-
-Kubernetes Components Used
-
-Minikube
-Deployments
-Pods
-Services
-ClusterIP
-Ingress
-Configurations and environment variables
-
-Kubernetes Deployment Flow
-
-Docker Image
-     |
-     v
-Kubernetes Deployment
-     |
-     v
-     Pod
-     |
-     v
-Kubernetes Service
-     |
-     v
-Ingress
-     |
-     v
-Application Request
-
-## Jenkins CI/CD
-
-Jenkins is used to automate the application build and CI/CD workflow.
-
-The project contains separate Jenkins pipeline definitions for the backend, frontend, and infrastructure-related workflows.
-
-### Current Jenkins Flow
+### V2 AWS Architecture
 
 ```text
-Developer
-    |
-    v
-GitHub Repository
-    |
-    v
-Jenkins Pipeline
-    |
-    +----> Checkout Source Code
-    |
-    +----> Build Application
-    |
-    +----> Run Tests
-    |
-    +----> Build Docker Image
-    |
-    +----> Push Image
-    |
-    v
-```
-Docker Registry / Deployment Stage
+                         Internet
+                            |
+                            v
+              AWS Application Load Balancer
+                            |
+                            v
+              AWS Load Balancer Controller
+                            |
+                            v
+                 Kubernetes Ingress
+                            |
+              +-------------+-------------+
+              |             |             |
+              v             v             v
+        User Service   Product Service  Order Service
+           :8081           :8082           :8083
+              |             |             |
+              +-------------+-------------+
+                            |
+                            v
+                     MongoDB Atlas
+````
 
-The backend pipeline is defined in:
+### AWS Infrastructure
 
-jenkins/Jenkinsfile.backend
-
-The project also contains:
-
-jenkins/Jenkinsfile.frontend
-jenkins/Jenkinsfile.infra
-Jenkins Work Completed
-Created Jenkins jobs and pipelines
-Connected Jenkins with the GitHub repository
-Used Jenkins to checkout project source code
-Built application components through Jenkins
-Used Jenkins with Docker
-Built Docker images through the pipeline
-Configured Docker Hub credentials
-Pushed Docker images to Docker Hub
-Verified successful Jenkins pipeline execution
-Future CI/CD Extensions
-
-The backend Jenkinsfile also contains stages and tooling intended for future project upgrades, such as:
-
-Trivy
-SonarQube
-AWS / EKS deployment
-Additional automated deployment and security stages
-
-## Local Setup
-
-### Prerequisites
-
-Make sure the following tools are installed:
-
-- Java 17+
-- Maven
-- Node.js and npm
-- Docker
-- kubectl
-- Minikube
-- Git
-- MongoDB Atlas account
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/SharmadB/MedFlow-B2B-ERP-Project.git
-cd MedFlow-B2B-ERP-Project
+```text
+                         AWS
+                          |
+              +-----------+-----------+
+              |                       |
+              v                       v
+             VPC                    Amazon ECR
+              |                       |
+              v                       |
+         Amazon EKS <-----------------+
+              |
+       Kubernetes Cluster
+              |
+      +-------+-------+
+      |       |       |
+      v       v       v
+    User   Product   Order
+   Service  Service  Service
+      |
+      v
+ MongoDB Atlas
 ```
 
-### Environment Configuration
+---
 
-The backend services use environment variables for configuration.
+## ☁️ AWS / EKS Deployment
 
-Environment files are kept outside version control and are not committed to the repository.
+The V2 deployment runs the backend microservices on **Amazon EKS**.
 
-The project uses .env files for service-specific configuration such as database connection details and application settings.
+### AWS components used
 
-### Run Locally
+* Amazon EKS
+* Amazon EC2 worker node
+* Amazon ECR
+* Amazon VPC
+* AWS Load Balancer Controller
+* Application Load Balancer
+* IAM
+* Terraform
 
-The individual Spring Boot services can be built using Maven.
+The Kubernetes cluster runs the services inside the `med-erp` namespace.
 
-Example:
+Each backend service runs with multiple replicas for basic workload availability.
 
-cd user-service
-mvn clean package
+---
 
-The generated application can then be run using the Spring Boot JAR.
+## 🌐 Application Routing
 
-The frontend can be installed and started using npm from the frontend directory.
+AWS Load Balancer Controller provisions and manages the Application Load Balancer from the Kubernetes Ingress configuration.
 
-### Docker Deployment
+API routing is handled through path-based rules:
 
-Docker can be used to build and run the application components as containers.
+```text
+/api/v1/auth          -> User Service
+/api/v1/users         -> User Service
+/api/v1/organizations -> User Service
 
-Refer to the Docker documentation in the docs/ directory for the detailed deployment steps.
+/api/v1/products      -> Product Service
 
-### Kubernetes Deployment
+/api/v1/orders        -> Order Service
+```
 
-The application can be deployed locally using Minikube and the Kubernetes manifests provided in the k8s/ directory.
+This allows a single public ALB endpoint to route requests to the appropriate Kubernetes service.
 
-The Kubernetes deployment includes the application services, Kubernetes Services, and Ingress configuration.
+---
 
-Refer to the Kubernetes documentation in the docs/ directory for the detailed deployment steps.
+## 🔐 Authentication
 
-## Deployment Flow
+The application uses:
 
-The project was developed and tested locally using Git, Docker, Kubernetes, and Jenkins.
+* Spring Security
+* JWT authentication
+* Role-based authorization
+* Protected REST endpoints
 
-### Overall Flow
+Typical request flow:
+
+```text
+Client
+  |
+  v
+Login API
+  |
+  v
+JWT Access Token
+  |
+  v
+Protected API Request
+  |
+  v
+JWT Validation
+  |
+  v
+Controller
+```
+
+Authentication was verified through the deployed AWS environment using protected API requests.
+
+---
+
+## 🧩 Backend Microservices
+
+### User Service
+
+**Port:** `8081`
+
+Responsibilities:
+
+* User registration
+* User authentication
+* JWT authentication
+* User management
+* Role management
+* Organization operations
+
+### Product Service
+
+**Port:** `8082`
+
+Responsibilities:
+
+* Product management
+* Product catalog
+* Inventory-related operations
+* Product APIs
+
+### Order Service
+
+**Port:** `8083`
+
+Responsibilities:
+
+* Order creation
+* Order management
+* Order status
+* Order retrieval
+* Order-related APIs
+
+---
+
+## 🗄️ Database
+
+The application uses **MongoDB Atlas** as the database.
+
+The backend services connect to MongoDB Atlas from the Kubernetes environment.
+
+Database credentials and connection details are provided through environment configuration and are not committed to the repository.
+
+---
+
+## 🐳 Docker & Amazon ECR
+
+Each backend service is packaged as a Docker image.
+
+```text
+Spring Boot Application
+        |
+        v
+     Dockerfile
+        |
+        v
+    Docker Image
+        |
+        v
+    Amazon ECR
+        |
+        v
+     Amazon EKS
+        |
+        v
+ Kubernetes Pod
+```
+
+Backend Docker images are stored in Amazon ECR repositories:
+
+```text
+med-erp/user-service
+med-erp/product-service
+med-erp/order-service
+```
+
+The V2 images were tagged with:
+
+```text
+eks-v2
+```
+
+---
+
+## ☸️ Kubernetes
+
+Kubernetes is used to deploy and manage the backend microservices on Amazon EKS.
+
+### Kubernetes components used
+
+* Namespace
+* Deployments
+* Pods
+* ClusterIP Services
+* Ingress
+* Environment configuration
+* Replica management
+
+Current application services:
+
+```text
+user-service      :8081
+product-service   :8082
+order-service     :8083
+```
+
+Each service is exposed internally through a Kubernetes `ClusterIP` service and accessed externally through the ALB/Ingress layer.
+
+---
+
+## 🏗️ Terraform
+
+Terraform is used as the Infrastructure as Code layer for the AWS environment.
+
+The project contains Terraform configurations/modules for AWS infrastructure including:
+
+* VPC
+* EKS
+* ECR
+* Route 53
+* S3 / CloudFront configuration
+* Environment-specific Terraform configuration
+
+Terraform helps define AWS infrastructure in a repeatable and version-controlled way.
+
+---
+
+## 🔄 Jenkins CI/CD
+
+Jenkins is used for the project's CI/CD workflow.
+
+The repository contains Jenkins pipeline definitions for:
+
+```text
+jenkins/
+├── Jenkinsfile.backend
+├── Jenkinsfile.frontend
+└── Jenkinsfile.infra
+```
+
+The CI/CD workflow covers activities such as:
 
 ```text
 Developer
-    |
-    v
-Git / GitHub
-    |
-    v
-Jenkins CI Pipeline
-    |
-    +----> Build & Test
-    |
-    +----> Docker Image
-    |
-    +----> Docker Hub
-    |
-    v
-Kubernetes / Minikube
-    |
-    +----> Deployments
-    |
-    +----> Pods
-    |
-    +----> Services
-    |
-    +----> Ingress
-    |
-    v
-React Frontend + Backend APIs
-    |
-    v
-MongoDB Atlas
-```
-
-Application Request Flow
-
-User
- |
- v
-React Frontend
- |
- v
-Kubernetes Ingress
- |
- +-------------------+-------------------+
- |                   |                   |
- v                   v                   v
-User Service     Product Service     Order Service
-   :8081             :8082             :8083
- |                   |                   |
- +-------------------+-------------------+
-                     |
-                     v
-                MongoDB Atlas
-
-CI/CD Flow
-
-The Jenkins pipeline is used to automate the build and Docker image workflow.
-
-Code Change
     |
     v
 GitHub
@@ -368,167 +307,210 @@ GitHub
     v
 Jenkins
     |
-    v
-Checkout
+    +--> Checkout
+    |
+    +--> Build
+    |
+    +--> Test
+    |
+    +--> Docker Build
+    |
+    +--> Docker Image Push
     |
     v
-Build / Test
-    |
-    v
-Docker Build
-    |
-    v
-Docker Hub
-    |
-    v
-Deployment
+Container Registry / Deployment Workflow
+```
 
-The current project uses Minikube for local Kubernetes deployment. Cloud deployment stages such as AWS/EKS are part of the planned future upgrade of the project.
+Jenkins was also used to build Docker images and push container images to a Docker registry during the project workflow.
 
-## Testing & Verification
+The AWS EKS deployment was separately verified using the AWS, Terraform, Docker, and Kubernetes tooling.
 
-The application was tested locally at different stages of the deployment process.
+---
 
-### Backend Verification
+## 🧪 Deployment Verification
 
-- Built the Spring Boot microservices using Maven.
-- Started and verified the individual backend services.
-- Verified the configured service ports.
-- Tested REST API endpoints.
-- Verified MongoDB Atlas connectivity and data operations.
+The V2 deployment was verified using:
 
-### Docker Verification
+* Kubernetes pod status
+* Kubernetes service status
+* Kubernetes node status
+* Ingress status
+* ALB routing
+* MongoDB Atlas connectivity
+* Authentication/login
+* Protected API requests
+* Product API
+* Order API
+* Amazon ECR image verification
 
-- Built Docker images for application components.
-- Started application containers locally.
-- Verified container status and application accessibility.
-- Tested Docker networking and port mapping.
-- Verified Docker images pushed through the Jenkins pipeline.
+Example Kubernetes verification:
 
-### Kubernetes Verification
+```bash
+kubectl get nodes
 
-The application was deployed on Minikube and verified using Kubernetes resources.
+kubectl -n med-erp get pods
 
-The following were checked during testing:
+kubectl -n med-erp get svc
 
-- Pods running successfully
-- Deployments created successfully
-- Kubernetes Services available
-- ClusterIP service communication
-- Ingress routing
-- Frontend-to-backend API requests
-- Backend service responses
-- Application accessibility through the configured Ingress route
+kubectl -n med-erp get ingress
+```
 
-### Jenkins Verification
+---
 
-The Jenkins pipeline was tested to verify the CI/CD workflow.
+## 🛠️ Technology Stack
 
-The following were verified:
+| Category               | Technology                    |
+| ---------------------- | ----------------------------- |
+| Frontend               | React, Vite                   |
+| Backend                | Spring Boot                   |
+| Language               | Java 17                       |
+| Database               | MongoDB Atlas                 |
+| Authentication         | Spring Security, JWT          |
+| Containerization       | Docker                        |
+| Container Registry     | Amazon ECR                    |
+| Orchestration          | Kubernetes                    |
+| Cloud Kubernetes       | Amazon EKS                    |
+| Load Balancing         | AWS Application Load Balancer |
+| Ingress                | AWS Load Balancer Controller  |
+| Infrastructure as Code | Terraform                     |
+| CI/CD                  | Jenkins                       |
+| Version Control        | Git, GitHub                   |
+| Cloud Platform         | AWS                           |
 
-- GitHub source checkout
-- Application build
-- Pipeline execution
-- Docker image build
-- Docker Hub authentication
-- Docker image push
-- Successful Jenkins build completion
+---
 
-### Overall Result
-
-The application was successfully built, containerized, deployed locally using Kubernetes, and tested through the frontend, backend APIs, and Kubernetes Ingress.
-
-## Project Structure
+## 📁 Repository Structure
 
 ```text
 MedFlow-B2B-ERP-Project/
 │
-├── frontend/                  # React + Vite frontend
+├── frontend/
 │
-├── user-service/              # User and authentication service
+├── user-service/
+├── product-service/
+├── order-service/
 │
-├── product-service/           # Product and inventory service
+├── k8s/
+│   ├── deployments/
+│   └── ingress/
 │
-├── order-service/             # Order management service
+├── terraform/
+│   ├── env/
+│   └── modules/
 │
-├── docker/                    # Docker configuration
+├── jenkins/
+│   ├── Jenkinsfile.backend
+│   ├── Jenkinsfile.frontend
+│   └── Jenkinsfile.infra
 │
-├── k8s/                       # Kubernetes manifests
-│
-├── jenkins/                   # Jenkins pipeline definitions
-│
-├── terraform/                 # Terraform infrastructure configuration
-│
-├── docs/                      # Project and deployment documentation
+├── docs/
 │
 ├── .gitignore
 └── README.md
 ```
 
-Main Directories
+---
 
-| Directory          | Purpose                                        |
-| ------------------ | ---------------------------------------------- |
-| `frontend/`        | React frontend application                     |
-| `user-service/`    | User management and authentication             |
-| `product-service/` | Product and inventory management               |
-| `order-service/`   | Order management                               |
-| `docker/`          | Docker-related configuration                   |
-| `k8s/`             | Kubernetes deployment and networking manifests |
-| `jenkins/`         | Jenkins pipeline files                         |
-| `terraform/`       | Infrastructure as Code configuration           |
-| `docs/`            | Detailed project documentation                 |
+## 💻 Local Development
 
-## Documentation
+The project was initially developed and tested using local Docker and Kubernetes/Minikube environments before the V2 AWS EKS deployment.
 
-Detailed project documentation is available in the `docs/` directory.
+### Prerequisites
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Manual Deployment](docs/MANUAL_DEPLOYMENT.md)
-- [Docker Deployment](docs/DOCKER_DEPLOYMENT.md)
-- [Kubernetes Deployment](docs/KUBERNETES_DEPLOYMENT.md)
-- [Jenkins Deployment](docs/JENKINS_DEPLOYMENT.md)
-- [Terraform Deployment](docs/TERRAFORM_DEPLOYMENT.md)
+* Java 17+
+* Maven
+* Node.js and npm
+* Docker
+* kubectl
+* Minikube
+* Terraform
+* AWS CLI
+* Git
+* MongoDB Atlas account
 
-## Future Improvements
-
-The current version focuses on local containerization, Kubernetes deployment, and CI/CD workflow.
-
-Planned improvements for future versions include:
-
-- AWS infrastructure deployment using Terraform
-- Kubernetes deployment on Amazon EKS
-- Automated AWS infrastructure provisioning
-- Trivy-based container security scanning
-- SonarQube-based code quality analysis
-- Extended Jenkins CI/CD automation
-- Automated deployment to cloud infrastructure
-- Improved monitoring and observability
-- Additional security and reliability improvements
-
-## Development Scripts
-
-The project includes helper scripts for starting and stopping the local development environment.
-
-### Start Development Environment
+### Clone Repository
 
 ```bash
-./start-dev.sh
+git clone https://github.com/SharmadB/MedFlow-B2B-ERP-Project.git
+
+cd MedFlow-B2B-ERP-Project
 ```
-This script helps start the required local application components for development and testing.
 
-Stop Development Environment
-```bash
-./stop-dev.sh
-```
-This script is used to stop the local development environment.
+---
 
-These scripts are intended to simplify repeated local development and testing.
+## 📌 Project Evolution
 
-## Project Note
+### V1 — Local Deployment
 
-This repository contains the customized project work completed as part of DevOps learning and practical project development.
+The initial deployment focused on:
 
-The current version focuses on local Docker and Kubernetes deployment, Jenkins CI/CD workflow, and integration with MongoDB Atlas.
+* Docker
+* Kubernetes
+* Minikube
+* Kubernetes Ingress
+* Jenkins
+* MongoDB Atlas
 
-Future versions may extend the project with cloud infrastructure, AWS EKS, Terraform-based provisioning, security scanning, code quality analysis, and additional CI/CD automation.
+### V2 — AWS Deployment
+
+The project was upgraded to AWS using:
+
+* Amazon EKS
+* Amazon ECR
+* AWS VPC
+* Terraform
+* AWS Load Balancer Controller
+* Application Load Balancer
+* Kubernetes Ingress
+* JWT authentication
+* MongoDB Atlas
+
+The V2 deployment demonstrates how the application can move from a local containerized environment to a cloud-based Kubernetes environment.
+
+---
+
+## 📊 Project Status
+
+### V2 Deployment
+
+* [x] Microservices deployed on Amazon EKS
+* [x] Docker images built
+* [x] Images pushed to Amazon ECR
+* [x] Kubernetes Deployments configured
+* [x] Kubernetes Services configured
+* [x] AWS Load Balancer Controller configured
+* [x] Application Load Balancer provisioned
+* [x] Ingress routing verified
+* [x] MongoDB Atlas connectivity verified
+* [x] JWT authentication verified
+* [x] Protected APIs verified
+* [x] Terraform infrastructure configured
+* [x] Jenkins CI/CD workflow implemented
+* [x] GitHub repository updated
+
+---
+
+## 🎯 Key DevOps Concepts Demonstrated
+
+This project provides practical exposure to:
+
+* Microservices architecture
+* Docker containerization
+* Container image management
+* Amazon ECR
+* Kubernetes Deployments and Pods
+* Kubernetes Services
+* Kubernetes Ingress
+* Amazon EKS
+* AWS Load Balancer Controller
+* Application Load Balancer
+* IAM
+* AWS VPC
+* Infrastructure as Code with Terraform
+* Jenkins CI/CD
+* Git and GitHub
+* JWT authentication
+* Cloud-based application deployment
+* Application troubleshooting and verification
+
+````
